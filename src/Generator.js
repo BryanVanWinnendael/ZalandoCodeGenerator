@@ -49,9 +49,9 @@ class Generator extends React.Component {
     render() {
 
         var { apiResponse, isLoaded, error2 } = this.state;
-        console.log(error2)
+        console.log(apiResponse)
         console.log(isLoaded)
-        console.log(this.state.apiResponse)
+
         if (!isLoaded) {
             return <div> Code aan het ophalen...</div>
         }
