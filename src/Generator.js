@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import Button from '@material-ui/core/Button';
+import Button0 from './components/ButtonO'
 
 class Generator extends React.Component {
     constructor(props) {
@@ -19,7 +19,7 @@ class Generator extends React.Component {
                 return response.text();
 
             } else {
-                console.log("errorrrrr")
+                console.log("error")
                 throw new Error('Something went wrong');
             }
         })
@@ -50,18 +50,17 @@ class Generator extends React.Component {
 
         var { apiResponse, isLoaded, error2 } = this.state;
         console.log(apiResponse)
-        console.log(isLoaded)
-
         if (!isLoaded) {
             return <div> Code aan het ophalen...</div>
         }
-        if (error2 || this.state.apiResponse === undefined) {
+        if (error2 || this.state.apiResponse === undefined || this.state.apiResponse === "") {
             console.log("fout")
             return (
                 <div className="App">
                     <header className="App-header">
                         <p>Er ging iets fout, probeer opnieuw</p>
-                        <Button variant="contained" color="primary" className="buttonfont" href="/code">probeer opnieuw</Button>
+                        <Button0 >{["Probeer opnieuw", "/code"]} </Button0>
+
                     </header>
                 </div>
             );
@@ -72,7 +71,9 @@ class Generator extends React.Component {
                 <div className="App">
                     <header className="App-header">
                         <p>{this.state.apiResponse}</p>
-                        <Button variant="contained" color="primary" className="buttonfont" href="/">Ga terug</Button>
+                        <Button0 >{["Ga terug", "/"]} </Button0>
+
+
                     </header>
                 </div>
             );
