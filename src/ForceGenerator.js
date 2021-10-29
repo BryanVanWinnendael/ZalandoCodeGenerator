@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import Button0 from './components/ButtonO'
 
-class Generator extends React.Component {
+class ForceGenerator extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -14,7 +14,8 @@ class Generator extends React.Component {
         this.error = "";
     }
     componentDidMount() {
-        fetch("https://apizalando.herokuapp.com/codes").then((response) => {
+        console.log(this.state)
+        fetch("https://apizalando.herokuapp.com/api").then((response) => {
             if (response.ok) {
                 return response.text();
 
@@ -42,6 +43,7 @@ class Generator extends React.Component {
 
             });
 
+
     }
 
 
@@ -58,8 +60,9 @@ class Generator extends React.Component {
             return (
                 <div className="App">
                     <header className="App-header">
-                        <p>Er zijn geen codes meer</p>
-                        <Button0 >{["Maak een code zelf aan", "/force"]} </Button0>
+                        <p>Er ging iets fout, probeer opnieuw.</p>
+                        <p></p>
+                        <Button0 >{["Probeer opnieuw", "/force"]} </Button0>
 
                     </header>
                 </div>
@@ -70,10 +73,8 @@ class Generator extends React.Component {
             return (
                 <div className="App">
                     <header className="App-header">
-                        <p>{this.state.apiResponse}</p>
-                        <Button0 >{["Ga terug", "/"]} </Button0>
-
-
+                        <p>Code gemaakt!</p>
+                        <Button0 >{["Krijg code", "/code"]} </Button0>
                     </header>
                 </div>
             );
@@ -81,4 +82,4 @@ class Generator extends React.Component {
 
     }
 }
-export default Generator;
+export default ForceGenerator;

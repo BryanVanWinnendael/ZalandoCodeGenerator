@@ -1,5 +1,5 @@
 // cors
-const database = require('./data.json');
+const database = require('../data.json');
 const puppeteer = require('puppeteer');
 const path = require('path');
 const fs = require('fs');
@@ -11,20 +11,24 @@ router.use(cors({
     origin: "*"
 }))
 
-var codeWread;
-
+var globalcode;
+var databases;
 
 
 router.get('/', async function (req, res, next) {
     res.set('Access-Control-Allow-Origin', '*');
+    wreadcode()
     try {
         code2 = await generate();
         res.send(code2)
+        
     }
     catch (error) {
         console.log("oops")
     }
-
+    console.log("hier")
+    console.log(globalcode)
+    console.log(wreadcode())
 });
 
 
@@ -34,13 +38,36 @@ function wreadcode() {
         if (err) {
             console.log(`Error reading file from disk: ${err}`);
         } else {
-            const databases = JSON.parse(data);
-            codeWread = databases.code;
-            return codeWread;
+            databases = JSON.parse(data);
+            
+            return databases;
         }
     });
-    return codeWread;
+    return databases;
 }
+
+function setCode(setCode){
+    const codes =  wreadcode();
+    console.log(codes)
+    console.log(setCode)
+    for(i in codes){
+        if(codes[i] === ""){
+            codes[i] = setCode;
+            break;
+        } 
+    }
+    try {
+        const data = JSON.stringify(codes, null, 4);
+        fs.writeFileSync('./data.json', data, 'utf8');
+
+    } catch (err) {
+        console.log(`Error writing file: ${err}`);
+    }
+
+}
+
+
+
 
 async function openMailBrowser() {
     const browser = await puppeteer.launch({
@@ -80,17 +107,11 @@ async function returncode(page, pagemail) {
     const textcode = await el2.getProperty('textContent');
     var code2 = await textcode.jsonValue();
     pagemail.close();
-    let user = {
-        code: code2
-    };
+    setCode(code2)
+    globalcode = code2;
+   
+   
 
-    try {
-        const data = JSON.stringify(user, null, 4);
-        fs.writeFileSync('./data.json', data, 'utf8');
-
-    } catch (err) {
-        console.log(`Error writing file: ${err}`);
-    }
     return code2;
 
 }
