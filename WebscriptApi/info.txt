@@ -1,1 +1,2 @@
 A 24/7 webscript that sends every day a get request to the api to generate up to 5 codes when needed.
+Hosted on replit.com
