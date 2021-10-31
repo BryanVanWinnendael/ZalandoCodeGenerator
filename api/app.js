@@ -8,6 +8,8 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var apiRouter = require('./routes/api')
 var codesRouter = require('./routes/codes')
+var getallRouter = require('./routes/getall')
+
 
 
 
@@ -34,6 +36,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/api', apiRouter)
 app.use('/codes', codesRouter)
+app.use('/getall', getallRouter)
+
 
 
 
