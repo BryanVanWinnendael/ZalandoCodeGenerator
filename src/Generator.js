@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import Button0 from './components/ButtonO'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 class Generator extends React.Component {
     constructor(props) {
@@ -44,6 +45,11 @@ class Generator extends React.Component {
 
     }
 
+    async copy(){
+        var code = document.getElementById("code")
+        await navigator.clipboard.writeText(code.innerHTML);
+    }
+
 
 
     render() {
@@ -58,9 +64,12 @@ class Generator extends React.Component {
             return (
                 <div className="App">
                     <header className="App-header">
-                        <p>Er zijn geen codes meer</p>
-                        <Button0 >{["Maak een code zelf aan", "/force"]} </Button0>
-
+                        <div className='card'>
+                            <p>Er zijn geen codes meer</p>
+                            <Button0 >{["Maak een code zelf aan", "/force"]} </Button0>
+                            <div className='circle1'></div>
+                            <div className='circle2'></div>
+                        </div>
                     </header>
                 </div>
             );
@@ -70,10 +79,19 @@ class Generator extends React.Component {
             return (
                 <div className="App">
                     <header className="App-header">
-                        <p>{this.state.apiResponse}</p>
+                    <div className='card'>
+                        <div style={{
+                            display:"flex",
+                            alignItems:"center"
+                        }}>
+                            <p id="code">{this.state.apiResponse}</p>
+                            <ContentCopyIcon sx={{fill:"white",margin:"10px",cursor:"pointer"}} value={this.state.apiResponse} onClick={this.copy}/>
+
+                        </div>
                         <Button0 >{["Ga terug", "/"]} </Button0>
-
-
+                        <div className='circle1'></div>
+                        <div className='circle2'></div>
+                        </div>
                     </header>
                 </div>
             );

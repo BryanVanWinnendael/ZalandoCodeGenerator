@@ -60,10 +60,13 @@ class ForceGenerator extends React.Component {
             return (
                 <div className="App">
                     <header className="App-header">
+                    <div className='card'>
                         <p>Er ging iets fout, probeer opnieuw.</p>
                         <p></p>
                         <Button0 >{["Probeer opnieuw", "/force"]} </Button0>
-
+                        <div className='circle1'></div>
+                        <div className='circle2'></div>
+                    </div>
                     </header>
                 </div>
             );
@@ -73,8 +76,12 @@ class ForceGenerator extends React.Component {
             return (
                 <div className="App">
                     <header className="App-header">
+                    <div className='card'>
                         <p>Code gemaakt!</p>
                         <Button0 >{["Krijg code", "/code"]} </Button0>
+                        <div className='circle1'></div>
+                        <div className='circle2'></div>
+                        </div>
                     </header>
                 </div>
             );

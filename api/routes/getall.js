@@ -1,10 +1,9 @@
 // cors
 const database = require('../data.json');
-
+var axios = require("axios").default;
 const path = require('path');
 const fs = require('fs');
 const cors = require('cors')
-
 var express = require('express');
 var router = express.Router();
 router.use(cors({
@@ -25,6 +24,8 @@ router.get('/', nocache, async function (req, res, next) {
     const codesJson = JSON.parse(data);
     res.send(codesJson)
 } );
+
+
 
 
 

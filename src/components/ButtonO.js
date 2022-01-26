@@ -8,8 +8,8 @@ const theme = createTheme({
     palette: {
 
         secondary: {
-            main: '#D7722C',
-            contrastText: "#fff",
+            main: '#00000',
+            contrastText: "#00000",
         },
 
     }
@@ -20,7 +20,12 @@ const theme = createTheme({
 const ButtonO = (param) => {
     return (
         <ThemeProvider theme={theme}>
-            <Button variant="contained" color="secondary" className="buttonfont" href={param.children[0][1]}>{param.children[0][0]}</Button>
+            <Button variant="contained"  
+            style={{ 
+                fontSize: 'large',
+               fontWeight: "bold"
+
+        }} color="secondary"  href={param.children[0][1]}>{param.children[0][0]}</Button>
         </ThemeProvider>
     );
 }

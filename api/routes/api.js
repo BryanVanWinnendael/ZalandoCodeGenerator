@@ -1,34 +1,39 @@
-// cors
-const database = require('../data.json');
+
 const puppeteer = require('puppeteer');
-const path = require('path');
+
 const fs = require('fs');
 const cors = require('cors')
+const tempmail = require('./MailApi')
 
 var express = require('express');
 var router = express.Router();
+
+const randomUA = require('modern-random-ua');
+
 router.use(cors({
     origin: "*"
 }))
 
-var globalcode;
+
 var databases;
 
 
 router.get('/', async function (req, res, next) {
     res.set('Access-Control-Allow-Origin', '*');
-    wreadcode()
-    try {
-        code2 = await generate();
-        res.send(code2)
+    generate(res)
+    
+    // wreadcode()
+    // try {
+    //     code2 = await generate();
+    //     res.send(code2)
         
-    }
-    catch (error) {
-        console.log("oops")
-    }
-    console.log("hier")
-    console.log(globalcode)
-    console.log(wreadcode())
+    // }
+    // catch (error) {
+    //     console.log("oops")
+    // }
+    // console.log("hier")
+    // console.log(globalcode)
+    // console.log(wreadcode())
 });
 
 
@@ -68,98 +73,132 @@ function setCode(setCode){
 
 
 
-
-async function openMailBrowser() {
-    const browser = await puppeteer.launch({
-        args: ["--no-sandbox"]
-    });
-    return browser;
-}
-
-async function scrapeMail(page) {
-    const [el] = await page.$x('/html/body/div[3]/div/div/b/span');
-    const text = await el.getProperty('textContent');
-    const mail = await text.jsonValue();
-    return mail;
-}
-
-async function SendCode(pagemail) {
+async function SendCode(mail,res) {
     const browserZalando = await puppeteer.launch({
-        args: ["--no-sandbox"]
+        userAgent: randomUA.generate(),
+        useChrome: true,
+        stealth: true,
+        headless:true,
+        args:["--no-sandbox"]
     });
-    const pageNieuws = await browserZalando.newPage();
-    await pageNieuws.goto('https://www.zalando.be/zalando-nieuwsbrief/');
-    await pageNieuws.waitFor(3000);
-    const buttona = await pageNieuws.$x('//*[@id="uc-btn-accept-banner"]');
-    await buttona[0].click();
-    await pageNieuws.type('#email-input', mail);
-    await pageNieuws.evaluate(() => {
-        var test = document.querySelector('#gender-1');
-        test.click();
+
+    const pageNieuws = (await browserZalando.pages())[0];
+    pageNieuws.viewport({
+        width: 1024 + Math.floor(Math.random() * 100),
+        height: 768 + Math.floor(Math.random() * 100),
     })
-    const buttonsend = await pageNieuws.$x('/html/body/div[4]/div/div/div/div/div/div/div[2]/div/div/form/div/div/div[5]/button');
-    await buttonsend[0].click();
+    pageNieuws.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36')
+   
+
+    
+    await pageNieuws.goto('https://www.zalando.be/zalando-nieuwsbrief/')
+  
+
+    await pageNieuws.click("label[for='gender-1']");
+    await pageNieuws.type('#email-input',mail.id)
+    await pageNieuws.click("button[type='submit']");
+
     browserZalando.close();
+
+    console.log("mail  send to " + mail.id)
+
+    return getCode(mail,res)
+
 }
 
-async function returncode(page, pagemail) {
-    const [el2] = await page.$x('/html/body/div[4]/div/div/div/div[2]/div[2]/div[4]/div[3]/table[2]/tbody/tr/td/table/tbody/tr/td/table[7]/tbody/tr/td/table[2]/tbody/tr/td/table[4]/tbody/tr/td[1]');
-    const textcode = await el2.getProperty('textContent');
-    var code2 = await textcode.jsonValue();
-    pagemail.close();
-    setCode(code2)
-    globalcode = code2;
+
+function splits(str) {
+    return str.split ("\n")
    
+}
+
+
+async function sendMail(mail,res){
+    //send nieuwbrief
+    return SendCode(mail,res)
+}
+
+// creates a temp mail
+async function getMail(res){
+    const client = tempmail.Create();
+    
+    client.on('ready', email => {
+        // loggedMail = logged in email
+        console.log(email)
+        var loggedMail = tempmail.Login(email)
+        return sendMail(loggedMail,res)
+        
+    })   
+
+
+}
+
+
+
+async function getCode(mail,res){
+    var id
+    const tmail = mail
+  
+
+    try{
+        mail.startMessageListener(1000, msgs => {
+            
+            mail.fetch().then(messages => {
+                id = messages[0]._id
+                foundcode = true
+                
+            }).then(()=>{
+                mail.findMessage(id).then(msg => {
+                const code = splits(msg.body.text)[33]
+             
+                var codeSend = code.split(" ")
+                setCode(codeSend[0])
+                res.send(codeSend[0].jsonValue())                
+            });
+            })
+         
+            
+        })
+    }
+    catch(e){
+        console.log("here" + e)
+    }
+  
+      
+ 
+    setTimeout(mail.stopMessageListener, 10000);
+  
+
    
 
-    return code2;
+
+
+
+    // setTimeout((() =>{
+
+    //     // const loggedMail = tempmail.Login(tmail.id)
+    //     console.log(tmail)
+        
+      
+
+    // }),13000);
+   
+
+   
+    
+   
+
+  
 
 }
 
-async function getCode(page, pagemail) {
-    try {
 
-        await page.reload({ waitUntil: ["networkidle0", "domcontentloaded"] });
-        b = await page
-            .waitForSelector('#email-table > div.e7m.row.list-group-item > div.e7m.col-md-12.ma1 > div.e7m.mess_bodiyy > table:nth-child(2) > tbody > tr > td > table > tbody > tr > td > table:nth-child(8) > tbody > tr > td > table:nth-child(2) > tbody > tr > td > table:nth-child(4) > tbody > tr > td:nth-child(1)')
-            .then(() => returncode(page, pagemail));
-        return b;
-    }
-    catch (error) {
-        console.log("error getcode")
-    }
+
+async function generate(res){
+    getMail(res)   
 }
 
 
-async function generate() {
-    try {
-
-        pagemail = await openMailBrowser();
-        const page = await pagemail.newPage();
-        await page.goto('https://generator.email/');
-        console.log("getting mail...");
-
-        mail = await scrapeMail(page);
-        console.log("sending mail...");
-
-        await SendCode(mail);
-        console.log("getting code...");
-
-        code = await getCode(page, pagemail);
-
-        console.log("code: " + code);
-        await wreadcode();
-        pagemail.close()
-
-        return code;
-
-
-    }
-    catch (error) {
-        console.log("something went wrong....")
-    }
-
-}
 
 
 module.exports = router;

@@ -13,10 +13,11 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+     
         <Route exact path="/" component={Home} />
         <Route exact path="/code" component={Generator} />
         <Route exact path="/force" component={ForceGenerator} />
-
+       
       </header>
     </div>
   )
